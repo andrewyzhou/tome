@@ -1,0 +1,519 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AA2000000000000000000001 /* TomeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000001 /* TomeApp.swift */; };
+		AA2000000000000000000002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000002 /* AppDelegate.swift */; };
+		AA2000000000000000000003 /* Blocklist.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000003 /* Blocklist.swift */; };
+		AA2000000000000000000004 /* ScheduleBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000004 /* ScheduleBlock.swift */; };
+		AA2000000000000000000005 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000005 /* AppState.swift */; };
+		AA2000000000000000000006 /* BlocklistManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000006 /* BlocklistManager.swift */; };
+		AA2000000000000000000007 /* ScheduleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000007 /* ScheduleManager.swift */; };
+		AA2000000000000000000008 /* HostsFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000008 /* HostsFileManager.swift */; };
+		AA2000000000000000000009 /* PauseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000009 /* PauseManager.swift */; };
+		AA200000000000000000000A /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000000A /* AboutView.swift */; };
+		AA200000000000000000000B /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000000B /* PreferencesView.swift */; };
+		AA200000000000000000000C /* BlocklistsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000000C /* BlocklistsView.swift */; };
+		AA200000000000000000000D /* SchedulesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000000D /* SchedulesView.swift */; };
+		AA200000000000000000000E /* PauseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000000E /* PauseView.swift */; };
+		AA200000000000000000000F /* TomeIPC.swift in Tome Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000000F /* TomeIPC.swift */; };
+		AA2000000000000000000010 /* TomeIPC.swift in Helper Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000000F /* TomeIPC.swift */; };
+		AA2000000000000000000011 /* main.swift in Helper Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000010 /* main.swift */; };
+		AA2000000000000000000012 /* HostsEditor.swift in Helper Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000011 /* HostsEditor.swift */; };
+		AA2000000000000000000013 /* GuardWatcher.swift in Helper Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000012 /* GuardWatcher.swift */; };
+		AA2000000000000000000014 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000013 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AA1000000000000000000001 /* TomeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TomeApp.swift; sourceTree = "<group>"; };
+		AA1000000000000000000002 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		AA1000000000000000000003 /* Blocklist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Blocklist.swift; sourceTree = "<group>"; };
+		AA1000000000000000000004 /* ScheduleBlock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleBlock.swift; sourceTree = "<group>"; };
+		AA1000000000000000000005 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		AA1000000000000000000006 /* BlocklistManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlocklistManager.swift; sourceTree = "<group>"; };
+		AA1000000000000000000007 /* ScheduleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleManager.swift; sourceTree = "<group>"; };
+		AA1000000000000000000008 /* HostsFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostsFileManager.swift; sourceTree = "<group>"; };
+		AA1000000000000000000009 /* PauseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PauseManager.swift; sourceTree = "<group>"; };
+		AA100000000000000000000A /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
+		AA100000000000000000000B /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
+		AA100000000000000000000C /* BlocklistsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlocklistsView.swift; sourceTree = "<group>"; };
+		AA100000000000000000000D /* SchedulesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchedulesView.swift; sourceTree = "<group>"; };
+		AA100000000000000000000E /* PauseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PauseView.swift; sourceTree = "<group>"; };
+		AA100000000000000000000F /* TomeIPC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TomeIPC.swift; sourceTree = "<group>"; };
+		AA1000000000000000000010 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		AA1000000000000000000011 /* HostsEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostsEditor.swift; sourceTree = "<group>"; };
+		AA1000000000000000000012 /* GuardWatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuardWatcher.swift; sourceTree = "<group>"; };
+		AA1000000000000000000013 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AA1000000000000000000014 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AA1000000000000000000015 /* Tome.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Tome.entitlements; sourceTree = "<group>"; };
+		AA1000000000000000000016 /* TomeHelper-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TomeHelper-Info.plist"; sourceTree = "<group>"; };
+		AA1000000000000000000017 /* TomeHelper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TomeHelper.entitlements; sourceTree = "<group>"; };
+		AA1000000000000000000018 /* Tome.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tome.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA1000000000000000000019 /* TomeHelper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TomeHelper; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AA3000000000000000000003 /* Frameworks (Tome) */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA3000000000000000000006 /* Frameworks (Helper) */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AA0000000000000000000001 /* root */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000000000004 /* Tome */,
+				AA0000000000000000000008 /* TomeHelper */,
+				AA0000000000000000000009 /* Shared */,
+				AA0000000000000000000002 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000002 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AA1000000000000000000018 /* Tome.app */,
+				AA1000000000000000000019 /* TomeHelper */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000004 /* Tome */ = {
+			isa = PBXGroup;
+			children = (
+				AA1000000000000000000001 /* TomeApp.swift */,
+				AA1000000000000000000002 /* AppDelegate.swift */,
+				AA0000000000000000000005 /* Models */,
+				AA0000000000000000000006 /* Managers */,
+				AA0000000000000000000007 /* Views */,
+				AA1000000000000000000013 /* Assets.xcassets */,
+				AA1000000000000000000014 /* Info.plist */,
+				AA1000000000000000000015 /* Tome.entitlements */,
+			);
+			path = Tome;
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000005 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				AA1000000000000000000003 /* Blocklist.swift */,
+				AA1000000000000000000004 /* ScheduleBlock.swift */,
+				AA1000000000000000000005 /* AppState.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000006 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				AA1000000000000000000006 /* BlocklistManager.swift */,
+				AA1000000000000000000007 /* ScheduleManager.swift */,
+				AA1000000000000000000008 /* HostsFileManager.swift */,
+				AA1000000000000000000009 /* PauseManager.swift */,
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000007 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				AA100000000000000000000A /* AboutView.swift */,
+				AA100000000000000000000B /* PreferencesView.swift */,
+				AA100000000000000000000C /* BlocklistsView.swift */,
+				AA100000000000000000000D /* SchedulesView.swift */,
+				AA100000000000000000000E /* PauseView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000008 /* TomeHelper */ = {
+			isa = PBXGroup;
+			children = (
+				AA1000000000000000000010 /* main.swift */,
+				AA1000000000000000000011 /* HostsEditor.swift */,
+				AA1000000000000000000012 /* GuardWatcher.swift */,
+				AA1000000000000000000016 /* TomeHelper-Info.plist */,
+				AA1000000000000000000017 /* TomeHelper.entitlements */,
+			);
+			path = TomeHelper;
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000009 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				AA100000000000000000000F /* TomeIPC.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AA4000000000000000000001 /* Tome */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA6000000000000000000001 /* Build configuration list for PBXNativeTarget "Tome" */;
+			buildPhases = (
+				AA3000000000000000000001 /* Sources */,
+				AA3000000000000000000002 /* Resources */,
+				AA3000000000000000000003 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Tome;
+			productName = Tome;
+			productReference = AA1000000000000000000018 /* Tome.app */;
+			productType = "com.apple.product-type.application";
+		};
+		AA4000000000000000000002 /* TomeHelper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA6000000000000000000002 /* Build configuration list for PBXNativeTarget "TomeHelper" */;
+			buildPhases = (
+				AA3000000000000000000004 /* Sources */,
+				AA3000000000000000000005 /* Resources */,
+				AA3000000000000000000006 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TomeHelper;
+			productName = TomeHelper;
+			productReference = AA1000000000000000000019 /* TomeHelper */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AAC00000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					AA4000000000000000000001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+					AA4000000000000000000002 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = AA6000000000000000000003 /* Build configuration list for PBXProject "Tome" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = AA0000000000000000000001;
+			productRefGroup = AA0000000000000000000002 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AA4000000000000000000001 /* Tome */,
+				AA4000000000000000000002 /* TomeHelper */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AA3000000000000000000002 /* Resources (Tome) */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA2000000000000000000014 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA3000000000000000000005 /* Resources (Helper) */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AA3000000000000000000001 /* Sources (Tome) */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA2000000000000000000001 /* TomeApp.swift in Sources */,
+				AA2000000000000000000002 /* AppDelegate.swift in Sources */,
+				AA2000000000000000000003 /* Blocklist.swift in Sources */,
+				AA2000000000000000000004 /* ScheduleBlock.swift in Sources */,
+				AA2000000000000000000005 /* AppState.swift in Sources */,
+				AA2000000000000000000006 /* BlocklistManager.swift in Sources */,
+				AA2000000000000000000007 /* ScheduleManager.swift in Sources */,
+				AA2000000000000000000008 /* HostsFileManager.swift in Sources */,
+				AA2000000000000000000009 /* PauseManager.swift in Sources */,
+				AA200000000000000000000A /* AboutView.swift in Sources */,
+				AA200000000000000000000B /* PreferencesView.swift in Sources */,
+				AA200000000000000000000C /* BlocklistsView.swift in Sources */,
+				AA200000000000000000000D /* SchedulesView.swift in Sources */,
+				AA200000000000000000000E /* PauseView.swift in Sources */,
+				AA200000000000000000000F /* TomeIPC.swift in Tome Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA3000000000000000000004 /* Sources (Helper) */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA2000000000000000000010 /* TomeIPC.swift in Helper Sources */,
+				AA2000000000000000000011 /* main.swift in Helper Sources */,
+				AA2000000000000000000012 /* HostsEditor.swift in Helper Sources */,
+				AA2000000000000000000013 /* GuardWatcher.swift in Helper Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		AA5000000000000000000001 /* Debug (Tome) */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				BUNDLE_LOADER = "";
+				CODE_SIGN_ENTITLEMENTS = Tome/Tome.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = Tome/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.andrewzhou.tome";
+				PRODUCT_NAME = Tome;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		AA5000000000000000000002 /* Release (Tome) */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				BUNDLE_LOADER = "";
+				CODE_SIGN_ENTITLEMENTS = Tome/Tome.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = Tome/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.andrewzhou.tome";
+				PRODUCT_NAME = Tome;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		AA5000000000000000000003 /* Debug (TomeHelper) */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = TomeHelper/TomeHelper.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "TomeHelper/TomeHelper-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.andrewzhou.tome.helper";
+				PRODUCT_NAME = TomeHelper;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		AA5000000000000000000004 /* Release (TomeHelper) */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = TomeHelper/TomeHelper.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "TomeHelper/TomeHelper-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.andrewzhou.tome.helper";
+				PRODUCT_NAME = TomeHelper;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		AA5000000000000000000005 /* Debug (Project) */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_LOOPS = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		AA5000000000000000000006 /* Release (Project) */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_LOOPS = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AA6000000000000000000001 /* Build configuration list for PBXNativeTarget "Tome" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA5000000000000000000001 /* Debug */,
+				AA5000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA6000000000000000000002 /* Build configuration list for PBXNativeTarget "TomeHelper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA5000000000000000000003 /* Debug */,
+				AA5000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA6000000000000000000003 /* Build configuration list for PBXProject "Tome" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA5000000000000000000005 /* Debug */,
+				AA5000000000000000000006 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = AAC00000000000000000001 /* Project object */;
+}
