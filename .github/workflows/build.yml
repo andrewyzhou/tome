@@ -1,0 +1,57 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: select xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
+
+      - name: build tome.app
+        run: |
+          xcodebuild \
+            -project Tome.xcodeproj \
+            -scheme Tome \
+            -configuration Release \
+            -derivedDataPath build/DerivedData \
+            SYMROOT=build \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: build tomehelper
+        run: |
+          xcodebuild \
+            -project Tome.xcodeproj \
+            -scheme TomeHelper \
+            -configuration Release \
+            -derivedDataPath build/DerivedData \
+            SYMROOT=build \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: package artifacts
+        run: |
+          mkdir -p artifacts
+          cp -R build/Release/Tome.app artifacts/
+          cp build/Release/TomeHelper artifacts/
+          cd artifacts && zip -r ../Tome-${{ github.sha }}.zip .
+
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tome-${{ github.sha }}
+          path: Tome-${{ github.sha }}.zip
+          retention-days: 30
