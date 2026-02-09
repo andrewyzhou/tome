@@ -17,6 +17,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var aboutWindow: NSWindow?
     private var pauseWindow: NSWindow?
 
+    // window delegates must be held strongly (NSWindow.delegate is weak)
+    private var prefsWindowDelegate: WindowCloseDelegate?
+    private var aboutWindowDelegate: WindowCloseDelegate?
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
 
@@ -204,7 +208,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 .environmentObject(ScheduleManager.shared)
             let window = makeWindow(title: "Tome Preferences", content: view, size: NSSize(width: 680, height: 520))
             prefsWindow = window
-            window.delegate = WindowCloseDelegate { [weak self] in self?.prefsWindow = nil }
+            let prefsDelegate = WindowCloseDelegate { [weak self] in self?.prefsWindow = nil }
+            prefsWindowDelegate = prefsDelegate
+            window.delegate = prefsDelegate
         }
         prefsWindow?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
@@ -216,7 +222,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let window = makeWindow(title: "About Tome", content: view, size: NSSize(width: 340, height: 300))
             window.styleMask = [.titled, .closable]
             aboutWindow = window
-            window.delegate = WindowCloseDelegate { [weak self] in self?.aboutWindow = nil }
+            let aboutDelegate = WindowCloseDelegate { [weak self] in self?.aboutWindow = nil }
+            aboutWindowDelegate = aboutDelegate
+            window.delegate = aboutDelegate
         }
         aboutWindow?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)

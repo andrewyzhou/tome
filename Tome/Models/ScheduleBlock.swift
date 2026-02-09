@@ -30,7 +30,7 @@ enum Weekday: Int, Codable, CaseIterable, Identifiable {
     }
 }
 
-struct TimeOfDay: Codable, Equatable {
+struct TimeOfDay: Codable, Equatable, Hashable {
     var hour: Int    // 0-23
     var minute: Int  // 0-59
 
