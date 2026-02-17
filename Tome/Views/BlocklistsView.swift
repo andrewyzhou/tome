@@ -67,6 +67,7 @@ struct BlocklistsView: View {
             // Detail: domain editor
             if let id = selectedID, let idx = blocklistManager.blocklists.firstIndex(where: { $0.id == id }) {
                 BlocklistDetailView(blocklist: $blocklistManager.blocklists[idx], isLocked: isLocked)
+                    .id(id)
                     .onDisappear { blocklistManager.save() }
             } else {
                 Color.clear
@@ -82,6 +83,7 @@ struct BlocklistsView: View {
                 blocklistManager.add(list)
                 selectedID = list.id
             }
+            .environmentObject(blocklistManager)
         }
         .fileImporter(
             isPresented: $showImportPanel,
@@ -185,31 +187,43 @@ struct BlocklistDetailView: View {
 
 struct NewBlocklistSheet: View {
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var blocklistManager: BlocklistManager
     @State private var name = ""
     let onCreate: (String) -> Void
+
+    private var isDuplicate: Bool {
+        blocklistManager.blocklists.contains { $0.name.lowercased() == name.lowercased() }
+    }
 
     var body: some View {
         VStack(spacing: 16) {
             Text("New Blocklist")
                 .font(.headline)
 
-            TextField("Name", text: $name)
-                .textFieldStyle(.roundedBorder)
-                .frame(width: 240)
+            VStack(alignment: .leading, spacing: 4) {
+                TextField("Name", text: $name)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 240)
+                if isDuplicate {
+                    Text("A blocklist with this name already exists.")
+                        .font(.caption)
+                        .foregroundColor(.red)
+                }
+            }
 
             HStack {
                 Button("Cancel") { dismiss() }
                     .keyboardShortcut(.escape)
                 Button("Create") {
-                    onCreate(name.isEmpty ? "Untitled" : name)
+                    onCreate(name.trimmingCharacters(in: .whitespaces))
                     dismiss()
                 }
                 .keyboardShortcut(.return)
                 .buttonStyle(.borderedProminent)
-                .disabled(name.isEmpty)
+                .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty || isDuplicate)
             }
         }
         .padding(24)
-        .frame(width: 300, height: 140)
+        .frame(width: 300, height: 160)
     }
 }
