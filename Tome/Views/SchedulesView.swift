@@ -101,7 +101,7 @@ struct ScheduleRowView: View {
                         .cornerRadius(3)
                 }
             }
-            Text("\(schedule.startTime.displayString) – \(schedule.endTime.displayString)")
+            Text(schedule.isAllDay ? "All day" : "\(schedule.startTime.displayString) – \(schedule.endTime.displayString)")
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
@@ -149,10 +149,14 @@ struct ScheduleDetailView: View {
                 // Time range
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Time").font(.headline)
-                    HStack(spacing: 12) {
-                        TimePickerView(label: "From", time: $schedule.startTime, isLocked: isLocked)
-                        Text("–").foregroundColor(.secondary)
-                        TimePickerView(label: "To", time: $schedule.endTime, isLocked: isLocked)
+                    Toggle("All day", isOn: $schedule.isAllDay)
+                        .disabled(isLocked)
+                    if !schedule.isAllDay {
+                        HStack(spacing: 12) {
+                            TimePickerView(label: "From", time: $schedule.startTime, isLocked: isLocked)
+                            Text("–").foregroundColor(.secondary)
+                            TimePickerView(label: "To", time: $schedule.endTime, isLocked: isLocked)
+                        }
                     }
                 }
 

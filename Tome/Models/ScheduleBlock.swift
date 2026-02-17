@@ -64,6 +64,7 @@ struct ScheduleBlock: Identifiable, Codable, Hashable {
     var id: UUID
     var name: String
     var days: Set<Weekday>
+    var isAllDay: Bool
     var startTime: TimeOfDay
     var endTime: TimeOfDay
     var blocklistIDs: Set<UUID>
@@ -73,6 +74,7 @@ struct ScheduleBlock: Identifiable, Codable, Hashable {
         id: UUID = UUID(),
         name: String = "New Schedule",
         days: Set<Weekday> = [.monday, .tuesday, .wednesday, .thursday, .friday],
+        isAllDay: Bool = false,
         startTime: TimeOfDay = TimeOfDay(hour: 9, minute: 0),
         endTime: TimeOfDay = TimeOfDay(hour: 17, minute: 0),
         blocklistIDs: Set<UUID> = [],
@@ -81,6 +83,7 @@ struct ScheduleBlock: Identifiable, Codable, Hashable {
         self.id = id
         self.name = name
         self.days = days
+        self.isAllDay = isAllDay
         self.startTime = startTime
         self.endTime = endTime
         self.blocklistIDs = blocklistIDs
@@ -92,6 +95,7 @@ struct ScheduleBlock: Identifiable, Codable, Hashable {
         let cal = Calendar.current
         let weekdayNum = cal.component(.weekday, from: date)
         guard let today = Weekday(rawValue: weekdayNum), days.contains(today) else { return false }
+        if isAllDay { return true }
 
         let nowHour = cal.component(.hour, from: date)
         let nowMinute = cal.component(.minute, from: date)
