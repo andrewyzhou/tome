@@ -104,21 +104,6 @@ struct BlocklistsView: View {
         } message: {
             Text(importError ?? "")
         }
-        .overlay(isLocked ? lockedBanner : nil, alignment: .top)
-    }
-
-    private var lockedBanner: some View {
-        HStack {
-            Image(systemName: "lock.fill")
-            Text("Preferences are read-only during an active block session.")
-                .font(.caption)
-        }
-        .padding(8)
-        .background(Color.orange.opacity(0.15))
-        .cornerRadius(6)
-        .padding(.top, 8)
-    }
-
     private func addBlocklist() {
         isAdding = true
     }

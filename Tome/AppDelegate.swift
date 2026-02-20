@@ -24,6 +24,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
 
+        // force initialization so schedule evaluation starts immediately
+        _ = ScheduleManager.shared
+        _ = BlocklistManager.shared
+
         setupStatusItem()
         setupObservers()
 
@@ -81,23 +85,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem.isEnabled = false
         m.addItem(statusItem)
 
-        // Pause countdown line if active
-        if appState.pauseRequestActive {
-            let remaining = pauseManager.countdownSecondsRemaining
-            let mins = remaining / 60
-            let secs = remaining % 60
-            let countdownItem = NSMenuItem(
-                title: String(format: "Pause request: %d:%02d remaining", mins, secs),
-                action: #selector(cancelPauseRequest),
-                keyEquivalent: ""
-            )
-            countdownItem.target = self
-            m.addItem(countdownItem)
-        }
-
         m.addItem(.separator())
 
-        // Pause / Cancel Pause / Resume
+        // Pause / Cancel Pause / Resume — always visible, context-sensitive
         if appState.isPaused {
             let breakRemaining = pauseManager.breakSecondsRemaining
             let mins = breakRemaining / 60
@@ -109,16 +99,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             )
             resumeItem.target = self
             m.addItem(resumeItem)
-        } else if appState.isBlocking {
-            if appState.pauseRequestActive {
-                let cancelItem = NSMenuItem(title: "Cancel pause request", action: #selector(cancelPauseRequest), keyEquivalent: "")
-                cancelItem.target = self
-                m.addItem(cancelItem)
-            } else {
-                let pauseItem = NSMenuItem(title: "Request pause...", action: #selector(requestPause), keyEquivalent: "")
-                pauseItem.target = self
-                m.addItem(pauseItem)
-            }
+        } else if appState.pauseRequestActive {
+            let remaining = pauseManager.countdownSecondsRemaining
+            let mins = remaining / 60
+            let secs = remaining % 60
+            let cancelItem = NSMenuItem(
+                title: String(format: "Cancel pause request (%d:%02d)", mins, secs),
+                action: #selector(cancelPauseRequest),
+                keyEquivalent: ""
+            )
+            cancelItem.target = self
+            m.addItem(cancelItem)
+        } else {
+            let pauseItem = NSMenuItem(title: "Request pause...", action: #selector(requestPause), keyEquivalent: "")
+            pauseItem.target = self
+            pauseItem.isEnabled = appState.isActivelyBlocking
+            m.addItem(pauseItem)
         }
 
         m.addItem(.separator())
