@@ -34,6 +34,7 @@ class PauseManager: ObservableObject {
         DispatchQueue.main.async {
             self.appState.pauseRequestActive = false
             self.appState.pauseRequestEndsAt = nil
+            self.appState.pendingPauseConfirmation = false
         }
     }
 
@@ -45,8 +46,8 @@ class PauseManager: ObservableObject {
             DispatchQueue.main.async {
                 self.appState.pauseRequestActive = false
                 self.appState.pauseRequestEndsAt = nil
+                self.appState.pendingPauseConfirmation = true
             }
-            NotificationCenter.default.post(name: .tomeShowPauseConfirmation, object: nil)
         }
     }
 
@@ -58,18 +59,14 @@ class PauseManager: ObservableObject {
     // MARK: - Confirmed Pause (1-15 min break)
 
     func confirmPause(minutes: Int) {
-        let duration = TimeInterval(minutes * 60)
-        let endsAt = Date().addingTimeInterval(duration)
-
-        // remove blocks while paused
+        let endsAt = Date().addingTimeInterval(TimeInterval(minutes * 60))
         hostsManager.removeAllBlocks()
-
         DispatchQueue.main.async {
+            self.appState.pendingPauseConfirmation = false
             self.appState.isPaused = true
             self.appState.pauseEndsAt = endsAt
             self.appState.isBlocking = false
         }
-
         breakTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             self?.tickBreak()
         }
@@ -100,5 +97,5 @@ class PauseManager: ObservableObject {
 }
 
 extension Notification.Name {
-    static let tomeShowPauseConfirmation = Notification.Name("tomeShowPauseConfirmation")
+    static let tomeOpenPauseWindow = Notification.Name("tomeOpenPauseWindow")
 }

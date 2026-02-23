@@ -20,11 +20,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // window delegates must be held strongly (NSWindow.delegate is weak)
     private var prefsWindowDelegate: WindowCloseDelegate?
     private var aboutWindowDelegate: WindowCloseDelegate?
+    private var pauseWindowDelegate: WindowCloseDelegate?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
 
-        // force initialization so schedule evaluation starts immediately
         _ = ScheduleManager.shared
         _ = BlocklistManager.shared
 
@@ -33,8 +33,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(showPauseConfirmation),
-            name: .tomeShowPauseConfirmation,
+            selector: #selector(openPause),
+            name: .tomeOpenPauseWindow,
             object: nil
         )
     }
@@ -81,41 +81,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let m = NSMenu()
 
         // Status line
-        let statusItem = NSMenuItem(title: statusTitle(), action: nil, keyEquivalent: "")
-        statusItem.isEnabled = false
-        m.addItem(statusItem)
+        let statusMenuItem = NSMenuItem(title: statusTitle(), action: nil, keyEquivalent: "")
+        statusMenuItem.isEnabled = false
+        m.addItem(statusMenuItem)
 
         m.addItem(.separator())
 
-        // Pause / Cancel Pause / Resume — always visible, context-sensitive
-        if appState.isPaused {
-            let breakRemaining = pauseManager.breakSecondsRemaining
-            let mins = breakRemaining / 60
-            let secs = breakRemaining % 60
-            let resumeItem = NSMenuItem(
-                title: String(format: "End break early (%d:%02d left)", mins, secs),
-                action: #selector(endBreakEarly),
-                keyEquivalent: ""
-            )
-            resumeItem.target = self
-            m.addItem(resumeItem)
-        } else if appState.pauseRequestActive {
-            let remaining = pauseManager.countdownSecondsRemaining
-            let mins = remaining / 60
-            let secs = remaining % 60
-            let cancelItem = NSMenuItem(
-                title: String(format: "Cancel pause request (%d:%02d)", mins, secs),
-                action: #selector(cancelPauseRequest),
-                keyEquivalent: ""
-            )
-            cancelItem.target = self
-            m.addItem(cancelItem)
-        } else {
-            let pauseItem = NSMenuItem(title: "Request pause...", action: #selector(requestPause), keyEquivalent: "")
-            pauseItem.target = self
-            pauseItem.isEnabled = appState.isActivelyBlocking
-            m.addItem(pauseItem)
-        }
+        // Pause — always present, grayed out when not applicable
+        let pauseItem = NSMenuItem(title: "Pause...", action: #selector(openPause), keyEquivalent: "")
+        pauseItem.target = self
+        pauseItem.isEnabled = appState.pauseWindowEnabled
+        m.addItem(pauseItem)
 
         m.addItem(.separator())
 
@@ -132,12 +108,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         m.addItem(.separator())
 
         // Quit — disabled in locked mode during active blocking
-        let quitItem = NSMenuItem(title: "Quit Tome", action: #selector(quit), keyEquivalent: "q")
+        let quitItem = NSMenuItem(
+            title: appState.lockedMode && appState.isActivelyBlocking ? "Quit Tome (locked)" : "Quit Tome",
+            action: #selector(quit),
+            keyEquivalent: "q"
+        )
         quitItem.target = self
-        if appState.lockedMode && appState.isActivelyBlocking {
-            quitItem.isEnabled = false
-            quitItem.title = "Quit Tome (locked)"
-        }
+        quitItem.isEnabled = !(appState.lockedMode && appState.isActivelyBlocking)
         m.addItem(quitItem)
 
         self.menu = m
@@ -146,9 +123,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func statusTitle() -> String {
         if appState.isPaused {
-            let mins = pauseManager.breakSecondsRemaining / 60
-            let secs = pauseManager.breakSecondsRemaining % 60
-            return String(format: "Paused — %d:%02d remaining", mins, secs)
+            let remaining = pauseManager.breakSecondsRemaining
+            return String(format: "Paused — %d:%02d remaining", remaining / 60, remaining % 60)
         } else if appState.isBlocking {
             if let first = appState.activeSchedules.first {
                 return "Blocking · \(first.name)"
@@ -162,38 +138,34 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Observers
 
     private func setupObservers() {
-        appState.$isBlocking
-            .receive(on: RunLoop.main)
-            .sink { [weak self] _ in self?.updateStatusIcon() }
-            .store(in: &cancellables)
+        // update icon + rebuild menu on any relevant state change
+        let rebuild: (Any) -> Void = { [weak self] _ in
+            DispatchQueue.main.async {
+                self?.updateStatusIcon()
+                self?.rebuildMenu()
+            }
+        }
 
-        appState.$isPaused
-            .receive(on: RunLoop.main)
-            .sink { [weak self] _ in self?.updateStatusIcon() }
-            .store(in: &cancellables)
+        appState.$isBlocking.receive(on: RunLoop.main).sink(receiveValue: rebuild).store(in: &cancellables)
+        appState.$isPaused.receive(on: RunLoop.main).sink(receiveValue: rebuild).store(in: &cancellables)
+        appState.$pauseRequestActive.receive(on: RunLoop.main).sink(receiveValue: rebuild).store(in: &cancellables)
+        appState.$pendingPauseConfirmation.receive(on: RunLoop.main).sink(receiveValue: rebuild).store(in: &cancellables)
     }
 
     // MARK: - Actions
 
-    @objc private func requestPause() {
-        pauseManager.requestPause()
-        rebuildMenu()
-    }
-
-    @objc private func cancelPauseRequest() {
-        pauseManager.cancelPauseRequest()
-        rebuildMenu()
-    }
-
-    @objc private func endBreakEarly() {
-        pauseManager.endPause()
-        rebuildMenu()
-    }
-
-    @objc func showPauseConfirmation() {
-        let view = PauseConfirmView()
-            .environmentObject(appState)
-        showFloatingWindow(title: "Confirm Pause", content: view, identifier: "pause", size: NSSize(width: 320, height: 240))
+    @objc func openPause() {
+        if pauseWindow == nil {
+            let view = PauseView().environmentObject(appState)
+            let window = makeWindow(title: "Pause", content: view, size: NSSize(width: 320, height: 300))
+            window.styleMask = [.titled, .closable]
+            pauseWindow = window
+            let delegate = WindowCloseDelegate { [weak self] in self?.pauseWindow = nil }
+            pauseWindowDelegate = delegate
+            window.delegate = delegate
+        }
+        pauseWindow?.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
     }
 
     @objc private func openPreferences() {
@@ -204,9 +176,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 .environmentObject(ScheduleManager.shared)
             let window = makeWindow(title: "Tome Preferences", content: view, size: NSSize(width: 680, height: 520))
             prefsWindow = window
-            let prefsDelegate = WindowCloseDelegate { [weak self] in self?.prefsWindow = nil }
-            prefsWindowDelegate = prefsDelegate
-            window.delegate = prefsDelegate
+            let delegate = WindowCloseDelegate { [weak self] in self?.prefsWindow = nil }
+            prefsWindowDelegate = delegate
+            window.delegate = delegate
         }
         prefsWindow?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
@@ -218,9 +190,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let window = makeWindow(title: "About Tome", content: view, size: NSSize(width: 340, height: 300))
             window.styleMask = [.titled, .closable]
             aboutWindow = window
-            let aboutDelegate = WindowCloseDelegate { [weak self] in self?.aboutWindow = nil }
-            aboutWindowDelegate = aboutDelegate
-            window.delegate = aboutDelegate
+            let delegate = WindowCloseDelegate { [weak self] in self?.aboutWindow = nil }
+            aboutWindowDelegate = delegate
+            window.delegate = delegate
         }
         aboutWindow?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
@@ -244,23 +216,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         window.contentView = NSHostingView(rootView: content)
         window.isReleasedWhenClosed = false
         return window
-    }
-
-    private func showFloatingWindow<V: View>(title: String, content: V, identifier: String, size: NSSize) {
-        let window = NSPanel(
-            contentRect: NSRect(origin: .zero, size: size),
-            styleMask: [.titled, .closable, .nonactivatingPanel, .hudWindow],
-            backing: .buffered,
-            defer: false
-        )
-        window.title = title
-        window.center()
-        window.contentView = NSHostingView(rootView: content)
-        window.isReleasedWhenClosed = true
-        window.level = .floating
-        window.makeKeyAndOrderFront(nil)
-        NSApp.activate(ignoringOtherApps: true)
-        pauseWindow = window
     }
 }
 

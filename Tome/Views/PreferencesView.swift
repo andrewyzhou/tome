@@ -11,7 +11,6 @@ struct PreferencesView: View {
         VStack(spacing: 0) {
             if appState.isActivelyBlocking {
                 ActiveSessionBanner()
-                    .environmentObject(appState)
             }
 
             TabView(selection: $selectedTab) {
@@ -39,9 +38,6 @@ struct PreferencesView: View {
 }
 
 struct ActiveSessionBanner: View {
-    @EnvironmentObject var appState: AppState
-    private let pauseManager = PauseManager.shared
-
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: "lock.fill")
@@ -50,17 +46,10 @@ struct ActiveSessionBanner: View {
                 .font(.callout)
                 .foregroundColor(.primary)
             Spacer()
-            if appState.pauseRequestActive {
-                let remaining = pauseManager.countdownSecondsRemaining
-                Text(String(format: "Pause in %d:%02d", remaining / 60, remaining % 60))
-                    .font(.callout)
-                    .foregroundColor(.secondary)
-                Button("Cancel") { pauseManager.cancelPauseRequest() }
-                    .controlSize(.small)
-            } else {
-                Button("Request pause...") { pauseManager.requestPause() }
-                    .controlSize(.small)
+            Button("Pause...") {
+                NotificationCenter.default.post(name: .tomeOpenPauseWindow, object: nil)
             }
+            .controlSize(.small)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)

@@ -14,16 +14,24 @@ class AppState: ObservableObject {
     @Published var pauseRequestActive: Bool = false
     @Published var pauseRequestEndsAt: Date? = nil
 
+    // countdown expired — waiting for user to confirm duration
+    @Published var pendingPauseConfirmation: Bool = false
+
     var isActivelyBlocking: Bool {
-        return isBlocking && !isPaused
+        isBlocking && !isPaused
     }
 
     var canEditPreferences: Bool {
-        return !isActivelyBlocking
+        !isActivelyBlocking
     }
 
     var canToggleLockedMode: Bool {
-        return !isActivelyBlocking
+        !isActivelyBlocking
+    }
+
+    // pause window should be accessible whenever something is happening
+    var pauseWindowEnabled: Bool {
+        isBlocking || isPaused || pauseRequestActive || pendingPauseConfirmation
     }
 
     private init() {
