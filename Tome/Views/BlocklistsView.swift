@@ -104,6 +104,8 @@ struct BlocklistsView: View {
         } message: {
             Text(importError ?? "")
         }
+    }
+
     private func addBlocklist() {
         isAdding = true
     }

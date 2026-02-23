@@ -62,6 +62,8 @@ struct SchedulesView: View {
                 selectedID = schedule.id
             }
         }
+    }
+
     private func deleteSelected() {
         guard let id = selectedID else { return }
         scheduleManager.delete(id: id)
