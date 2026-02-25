@@ -12,6 +12,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private let hostsManager = HostsFileManager.shared
     private let scheduleManager = ScheduleManager.shared
 
+    private var statusTimer: Timer?
+
     // windows
     private var prefsWindow: NSWindow?
     private var aboutWindow: NSWindow?
@@ -138,11 +140,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Observers
 
     private func setupObservers() {
-        // update icon + rebuild menu on any relevant state change
         let rebuild: (Any) -> Void = { [weak self] _ in
             DispatchQueue.main.async {
                 self?.updateStatusIcon()
                 self?.rebuildMenu()
+                self?.updateStatusTimer()
             }
         }
 
@@ -150,6 +152,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         appState.$isPaused.receive(on: RunLoop.main).sink(receiveValue: rebuild).store(in: &cancellables)
         appState.$pauseRequestActive.receive(on: RunLoop.main).sink(receiveValue: rebuild).store(in: &cancellables)
         appState.$pendingPauseConfirmation.receive(on: RunLoop.main).sink(receiveValue: rebuild).store(in: &cancellables)
+    }
+
+    private func updateStatusTimer() {
+        let needsTick = appState.isPaused || appState.pauseRequestActive
+        if needsTick && statusTimer == nil {
+            let t = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+                self?.menu?.items.first?.title = self?.statusTitle() ?? ""
+            }
+            RunLoop.main.add(t, forMode: .common)
+            statusTimer = t
+        } else if !needsTick {
+            statusTimer?.invalidate()
+            statusTimer = nil
+        }
     }
 
     // MARK: - Actions

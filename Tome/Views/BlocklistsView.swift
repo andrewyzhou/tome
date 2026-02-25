@@ -40,9 +40,14 @@ struct BlocklistsView: View {
                     .disabled(isLocked)
                     .help("Add blocklist")
 
-                    Button(action: deleteSelected) {
+                    Button {
+                        guard let id = selectedID else { return }
+                        selectedID = nil
+                        blocklistManager.delete(id: id)
+                    } label: {
                         Image(systemName: "minus")
                             .frame(width: 28, height: 24)
+                            .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                     .disabled(isLocked || selectedID == nil)

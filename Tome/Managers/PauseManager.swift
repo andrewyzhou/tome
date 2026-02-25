@@ -83,10 +83,9 @@ class PauseManager: ObservableObject {
     func endPause() {
         breakTimer?.invalidate()
         breakTimer = nil
-        DispatchQueue.main.async {
-            self.appState.isPaused = false
-            self.appState.pauseEndsAt = nil
-        }
+        // set state synchronously before resumeAfterPause so evaluate() sees isPaused = false
+        appState.isPaused = false
+        appState.pauseEndsAt = nil
         scheduleManager.resumeAfterPause()
     }
 
