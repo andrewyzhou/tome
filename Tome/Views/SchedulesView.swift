@@ -42,7 +42,7 @@ struct SchedulesView: View {
                 .frame(height: 28)
                 .background(Color(NSColor.controlBackgroundColor))
             }
-            .frame(minWidth: 200, maxWidth: 240)
+            .frame(minWidth: 160, idealWidth: 160, maxWidth: 200)
 
             // Detail
             if let id = selectedID, let idx = scheduleManager.schedules.firstIndex(where: { $0.id == id }) {
@@ -184,12 +184,15 @@ struct DayToggleButton: View {
     var body: some View {
         Button(action: { if !isLocked { onToggle() } }) {
             Text(day.shortName)
-                .font(.caption)
-                .fontWeight(isSelected ? .semibold : .regular)
-                .frame(width: 32, height: 28)
-                .background(isSelected ? Color.accentColor : Color(NSColor.controlBackgroundColor))
+                .font(.system(size: 11, weight: isSelected ? .semibold : .regular))
+                .frame(width: 26, height: 26)
+                .background(isSelected ? Color.accentColor : Color.clear)
                 .foregroundColor(isSelected ? .white : .primary)
-                .cornerRadius(6)
+                .clipShape(Circle())
+                .overlay(
+                    Circle()
+                        .stroke(isSelected ? Color.clear : Color.secondary.opacity(0.4), lineWidth: 1)
+                )
         }
         .buttonStyle(.plain)
         .opacity(isLocked ? 0.5 : 1)
@@ -201,21 +204,55 @@ struct TimePickerView: View {
     @Binding var time: TimeOfDay
     let isLocked: Bool
 
-    @State private var selectedDate: Date = Date()
+    @State private var hourText: String = ""
+    @State private var minuteText: String = ""
+    @State private var isPM: Bool = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: 4) {
             Text(label).font(.caption).foregroundColor(.secondary)
-            DatePicker("", selection: $selectedDate, displayedComponents: .hourAndMinute)
-                .labelsHidden()
-                .disabled(isLocked)
-                .onChange(of: selectedDate) { newDate in
-                    time = TimeOfDay.from(date: newDate)
-                }
-                .onAppear {
-                    selectedDate = time.toDate()
-                }
+            HStack(spacing: 3) {
+                TextField("9", text: $hourText)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 34)
+                    .multilineTextAlignment(.center)
+                    .disabled(isLocked)
+                    .onChange(of: hourText) { _ in commitChange() }
+                Text(":").foregroundColor(.secondary)
+                TextField("00", text: $minuteText)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 34)
+                    .multilineTextAlignment(.center)
+                    .disabled(isLocked)
+                    .onChange(of: minuteText) { _ in commitChange() }
+            }
+            Picker("", selection: $isPM) {
+                Text("AM").tag(false)
+                Text("PM").tag(true)
+            }
+            .pickerStyle(.segmented)
+            .frame(width: 75)
+            .disabled(isLocked)
+            .onChange(of: isPM) { _ in commitChange() }
         }
+        .onAppear { loadFromTime() }
+        .onChange(of: time) { _ in loadFromTime() }
+    }
+
+    private func loadFromTime() {
+        let h = time.hour % 12 == 0 ? 12 : time.hour % 12
+        hourText = "\(h)"
+        minuteText = String(format: "%02d", time.minute)
+        isPM = time.hour >= 12
+    }
+
+    private func commitChange() {
+        guard let h = Int(hourText), h >= 1, h <= 12,
+              let m = Int(minuteText), m >= 0, m <= 59 else { return }
+        var hour24 = h
+        if isPM && h != 12 { hour24 = h + 12 }
+        else if !isPM && h == 12 { hour24 = 0 }
+        time = TimeOfDay(hour: hour24, minute: m)
     }
 }
 

@@ -190,7 +190,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 .environmentObject(appState)
                 .environmentObject(BlocklistManager.shared)
                 .environmentObject(ScheduleManager.shared)
-            let window = makeWindow(title: "Tome Preferences", content: view, size: NSSize(width: 680, height: 520))
+            let window = makeWindow(title: "Tome Preferences", content: view, size: NSSize(width: 510, height: 390))
             prefsWindow = window
             let delegate = WindowCloseDelegate { [weak self] in self?.prefsWindow = nil }
             prefsWindowDelegate = delegate

@@ -3,7 +3,20 @@ import SwiftUI
 struct PauseView: View {
     @EnvironmentObject var appState: AppState
     @State private var breakMinutes: Double = 5
+    @State private var pauseInput: String = ""
     private let pauseManager = PauseManager.shared
+
+    private var isValidInput: Bool {
+        let v = pauseInput.trimmingCharacters(in: .whitespaces).lowercased()
+        return v == "pause" || v == "urgent"
+    }
+
+    private func submitPauseInput() {
+        let v = pauseInput.trimmingCharacters(in: .whitespaces).lowercased()
+        if v == "pause" { pauseManager.requestPause() }
+        else if v == "urgent" { pauseManager.urgentPause() }
+        pauseInput = ""
+    }
 
     var body: some View {
         // TimelineView forces a re-render every second so countdowns are always live
@@ -36,14 +49,19 @@ struct PauseView: View {
                 .foregroundColor(.secondary)
             Text("Pause")
                 .font(.title2).fontWeight(.semibold)
-            Text("Starting a pause begins a 5-minute wait before your break. This delay is intentional.")
+            Text("Type \"pause\" for a 5‑minute wait before your break, or \"urgent\" to pause immediately.")
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
-            Button("Start pause request") {
-                pauseManager.requestPause()
+            HStack(spacing: 8) {
+                TextField("pause or urgent", text: $pauseInput)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 160)
+                    .onSubmit { submitPauseInput() }
+                Button("→") { submitPauseInput() }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(!isValidInput)
             }
-            .buttonStyle(.borderedProminent)
         }
     }
 

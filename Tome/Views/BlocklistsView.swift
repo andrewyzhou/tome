@@ -67,12 +67,11 @@ struct BlocklistsView: View {
                 .frame(height: 28)
                 .background(Color(NSColor.controlBackgroundColor))
             }
-            .frame(minWidth: 180, maxWidth: 220)
+            .frame(minWidth: 160, idealWidth: 160, maxWidth: 200)
 
             // Detail: domain editor
             if let id = selectedID, let idx = blocklistManager.blocklists.firstIndex(where: { $0.id == id }) {
                 BlocklistDetailView(blocklist: $blocklistManager.blocklists[idx], isLocked: isLocked)
-                    .id(id)
                     .onDisappear { blocklistManager.save() }
             } else {
                 Color.clear

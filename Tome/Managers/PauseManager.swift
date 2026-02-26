@@ -15,6 +15,13 @@ class PauseManager: ObservableObject {
 
     // MARK: - Pause Request (5-min countdown before confirmation)
 
+    func urgentPause() {
+        guard appState.isActivelyBlocking,
+              !appState.pauseRequestActive,
+              !appState.pendingPauseConfirmation else { return }
+        appState.pendingPauseConfirmation = true
+    }
+
     func requestPause() {
         guard appState.isActivelyBlocking, !appState.pauseRequestActive else { return }
         let endsAt = Date().addingTimeInterval(5 * 60)

@@ -1,4 +1,5 @@
 import SwiftUI
+import ServiceManagement
 
 struct PreferencesView: View {
     @EnvironmentObject var appState: AppState
@@ -33,7 +34,7 @@ struct PreferencesView: View {
                     .tag(2)
             }
         }
-        .frame(width: 680, height: 520)
+        .frame(width: 510, height: 390)
     }
 }
 
@@ -61,8 +62,28 @@ struct SettingsTabView: View {
     @EnvironmentObject var appState: AppState
     private let hostsManager = HostsFileManager.shared
 
+    private var openAtLogin: Bool {
+        SMAppService.mainApp.status == .enabled
+    }
+
     var body: some View {
         Form {
+            Section {
+                Toggle("Open at login", isOn: Binding(
+                    get: { openAtLogin },
+                    set: { enabled in
+                        do {
+                            if enabled { try SMAppService.mainApp.register() }
+                            else { try SMAppService.mainApp.unregister() }
+                        } catch {
+                            print("SMAppService error: \(error)")
+                        }
+                    }
+                ))
+            } header: {
+                Text("General")
+            }
+
             Section {
                 Toggle("Locked mode", isOn: Binding(
                     get: { appState.lockedMode },

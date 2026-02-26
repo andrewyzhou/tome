@@ -7,13 +7,13 @@ enum Weekday: Int, Codable, CaseIterable, Identifiable {
 
     var shortName: String {
         switch self {
-        case .sunday: return "Su"
-        case .monday: return "Mo"
-        case .tuesday: return "Tu"
-        case .wednesday: return "We"
-        case .thursday: return "Th"
-        case .friday: return "Fr"
-        case .saturday: return "Sa"
+        case .sunday: return "S"
+        case .monday: return "M"
+        case .tuesday: return "T"
+        case .wednesday: return "W"
+        case .thursday: return "T"
+        case .friday: return "F"
+        case .saturday: return "S"
         }
     }
 
