@@ -19,12 +19,11 @@ struct PauseView: View {
     }
 
     var body: some View {
-        // TimelineView forces a re-render every second so countdowns are always live
         TimelineView(.periodic(from: .now, by: 1.0)) { _ in
             content
         }
-        .frame(width: 320, height: 300)
-        .padding(28)
+        .frame(width: 160, height: 150)
+        .padding(12)
     }
 
     @ViewBuilder
@@ -43,20 +42,26 @@ struct PauseView: View {
     // MARK: - States
 
     private var idleView: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 10) {
             Image(systemName: "pause.circle")
-                .font(.system(size: 44))
+                .font(.system(size: 28))
                 .foregroundColor(.secondary)
             Text("Pause")
-                .font(.title2).fontWeight(.semibold)
-            Text("Type \"pause\" for a 5‑minute wait before your break, or \"urgent\" to pause immediately.")
-                .font(.body)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-            HStack(spacing: 8) {
-                TextField("pause or urgent", text: $pauseInput)
+                .font(.headline).fontWeight(.semibold)
+            VStack(spacing: 2) {
+                Text("Type \"pause\" to pause Tome after a 5-minute wait.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                Text("Type \"urgent\" to pause Tome immediately.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            HStack(spacing: 6) {
+                TextField("", text: $pauseInput)
                     .textFieldStyle(.roundedBorder)
-                    .frame(width: 160)
+                    .frame(width: 100)
                     .onSubmit { submitPauseInput() }
                 Button("→") { submitPauseInput() }
                     .buttonStyle(.borderedProminent)
@@ -67,48 +72,44 @@ struct PauseView: View {
 
     private var countdownView: some View {
         let remaining = pauseManager.countdownSecondsRemaining
-        return VStack(spacing: 20) {
+        return VStack(spacing: 10) {
             Image(systemName: "timer")
-                .font(.system(size: 44))
+                .font(.system(size: 28))
                 .foregroundColor(.orange)
             Text("Pause requested")
-                .font(.title2).fontWeight(.semibold)
+                .font(.headline).fontWeight(.semibold)
             Text(String(format: "%d:%02d", remaining / 60, remaining % 60))
-                .font(.system(size: 52, weight: .thin, design: .monospaced))
+                .font(.system(size: 32, weight: .thin, design: .monospaced))
                 .foregroundColor(.orange)
-            Text("Sit tight. Confirm your break when the timer reaches zero.")
-                .font(.body)
+            Text("Confirm your pause when the timer reaches zero.")
+                .font(.caption)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
-            Button("Cancel") {
-                pauseManager.cancelPauseRequest()
-            }
+            Button("Cancel") { pauseManager.cancelPauseRequest() }
         }
     }
 
     private var confirmView: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 10) {
             Image(systemName: "pause.circle.fill")
-                .font(.system(size: 44))
+                .font(.system(size: 28))
                 .foregroundColor(.orange)
             Text("Take a break?")
-                .font(.title2).fontWeight(.semibold)
-            VStack(spacing: 8) {
+                .font(.headline).fontWeight(.semibold)
+            VStack(spacing: 4) {
                 Text("\(Int(breakMinutes)) minute\(Int(breakMinutes) == 1 ? "" : "s")")
-                    .font(.headline)
+                    .font(.subheadline)
                 Slider(value: $breakMinutes, in: 1...15, step: 1)
-                    .frame(width: 240)
+                    .frame(width: 130)
                 HStack {
-                    Text("1 min").font(.caption).foregroundColor(.secondary)
+                    Text("1 min").font(.caption2).foregroundColor(.secondary)
                     Spacer()
-                    Text("15 min").font(.caption).foregroundColor(.secondary)
+                    Text("15 min").font(.caption2).foregroundColor(.secondary)
                 }
-                .frame(width: 240)
+                .frame(width: 130)
             }
-            HStack(spacing: 12) {
-                Button("Cancel") {
-                    pauseManager.cancelPauseRequest()
-                }
+            HStack(spacing: 8) {
+                Button("Cancel") { pauseManager.cancelPauseRequest() }
                 Button("Start break") {
                     pauseManager.confirmPause(minutes: Int(breakMinutes))
                     closeWindow()
@@ -121,20 +122,20 @@ struct PauseView: View {
 
     private var breakActiveView: some View {
         let remaining = pauseManager.breakSecondsRemaining
-        return VStack(spacing: 20) {
+        return VStack(spacing: 10) {
             Image(systemName: "pause.circle.fill")
-                .font(.system(size: 44))
+                .font(.system(size: 28))
                 .foregroundColor(.green)
-            Text("On break")
-                .font(.title2).fontWeight(.semibold)
+            Text("Paused")
+                .font(.headline).fontWeight(.semibold)
             Text(String(format: "%d:%02d", remaining / 60, remaining % 60))
-                .font(.system(size: 52, weight: .thin, design: .monospaced))
+                .font(.system(size: 32, weight: .thin, design: .monospaced))
                 .foregroundColor(.green)
-            Text("Blocking will resume automatically when your break ends.")
-                .font(.body)
+            Text("Tome will resume automatically after your pause finishes.")
+                .font(.caption)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
-            Button("End break early") {
+            Button("End pause early") {
                 pauseManager.endPause()
                 closeWindow()
             }

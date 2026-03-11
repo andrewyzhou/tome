@@ -28,13 +28,18 @@ struct SchedulesView: View {
                         Image(systemName: "plus").frame(width: 28, height: 24)
                     }
                     .buttonStyle(.plain)
-                    .disabled(isLocked)
 
-                    Button(action: deleteSelected) {
-                        Image(systemName: "minus").frame(width: 28, height: 24)
+                    Button {
+                        guard let id = selectedID else { return }
+                        selectedID = nil
+                        scheduleManager.delete(id: id)
+                    } label: {
+                        Image(systemName: "minus")
+                            .frame(width: 28, height: 24)
+                            .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
-                    .disabled(isLocked || selectedID == nil)
+                    .disabled(selectedID == nil)
 
                     Spacer()
                 }
@@ -42,16 +47,14 @@ struct SchedulesView: View {
                 .frame(height: 28)
                 .background(Color(NSColor.controlBackgroundColor))
             }
-            .frame(minWidth: 160, idealWidth: 160, maxWidth: 200)
+            .frame(minWidth: 120, idealWidth: 120, maxWidth: 180)
 
             // Detail
             if let id = selectedID, let idx = scheduleManager.schedules.firstIndex(where: { $0.id == id }) {
                 ScheduleDetailView(
                     schedule: $scheduleManager.schedules[idx],
-                    blocklists: blocklistManager.blocklists,
-                    isLocked: isLocked
+                    blocklists: blocklistManager.blocklists
                 )
-                .onDisappear { scheduleManager.save() }
             } else {
                 Color.clear.overlay(Text("Select a schedule").foregroundColor(.secondary))
             }
@@ -62,12 +65,6 @@ struct SchedulesView: View {
                 selectedID = schedule.id
             }
         }
-    }
-
-    private func deleteSelected() {
-        guard let id = selectedID else { return }
-        scheduleManager.delete(id: id)
-        selectedID = nil
     }
 }
 
@@ -99,18 +96,20 @@ struct ScheduleRowView: View {
 struct ScheduleDetailView: View {
     @Binding var schedule: ScheduleBlock
     let blocklists: [Blocklist]
-    let isLocked: Bool
+
+    @State private var draft: ScheduleBlock = ScheduleBlock()
+    @State private var isDirty = false
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 // Name + enabled toggle
                 HStack {
-                    TextField("Schedule name", text: $schedule.name)
+                    TextField("Schedule name", text: $draft.name)
                         .textFieldStyle(.roundedBorder)
-                        .disabled(isLocked)
-                    Toggle("Enabled", isOn: $schedule.isEnabled)
-                        .disabled(isLocked)
+                        .onChange(of: draft.name) { _ in isDirty = true }
+                    Toggle("Enabled", isOn: $draft.isEnabled)
+                        .onChange(of: draft.isEnabled) { _ in isDirty = true }
                 }
 
                 // Days of week
@@ -120,14 +119,12 @@ struct ScheduleDetailView: View {
                         ForEach(Weekday.allCases) { day in
                             DayToggleButton(
                                 day: day,
-                                isSelected: schedule.days.contains(day),
-                                isLocked: isLocked
+                                isSelected: draft.days.contains(day),
+                                isLocked: false
                             ) {
-                                if schedule.days.contains(day) {
-                                    schedule.days.remove(day)
-                                } else {
-                                    schedule.days.insert(day)
-                                }
+                                if draft.days.contains(day) { draft.days.remove(day) }
+                                else { draft.days.insert(day) }
+                                isDirty = true
                             }
                         }
                     }
@@ -136,13 +133,17 @@ struct ScheduleDetailView: View {
                 // Time range
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Time").font(.headline)
-                    Toggle("All day", isOn: $schedule.isAllDay)
-                        .disabled(isLocked)
-                    if !schedule.isAllDay {
+                    Toggle("All day", isOn: $draft.isAllDay)
+                        .onChange(of: draft.isAllDay) { _ in isDirty = true }
+                    if !draft.isAllDay {
                         HStack(spacing: 12) {
-                            TimePickerView(label: "From", time: $schedule.startTime, isLocked: isLocked)
+                            TimePickerView(label: "From", time: $draft.startTime, isLocked: false) {
+                                isDirty = true
+                            }
                             Text("–").foregroundColor(.secondary)
-                            TimePickerView(label: "To", time: $schedule.endTime, isLocked: isLocked)
+                            TimePickerView(label: "To", time: $draft.endTime, isLocked: false) {
+                                isDirty = true
+                            }
                         }
                     }
                 }
@@ -157,21 +158,38 @@ struct ScheduleDetailView: View {
                     } else {
                         ForEach(blocklists) { list in
                             Toggle(list.name + " (\(list.domains.count) domains)", isOn: Binding(
-                                get: { schedule.blocklistIDs.contains(list.id) },
+                                get: { draft.blocklistIDs.contains(list.id) },
                                 set: { checked in
-                                    if checked { schedule.blocklistIDs.insert(list.id) }
-                                    else { schedule.blocklistIDs.remove(list.id) }
+                                    if checked { draft.blocklistIDs.insert(list.id) }
+                                    else { draft.blocklistIDs.remove(list.id) }
+                                    isDirty = true
                                 }
                             ))
-                            .disabled(isLocked)
                         }
                     }
                 }
 
                 Spacer()
+
+                if isDirty {
+                    HStack {
+                        Spacer()
+                        Button("Save Changes") { save() }
+                            .buttonStyle(.borderedProminent)
+                    }
+                }
             }
             .padding(20)
         }
+        .onAppear { draft = schedule; isDirty = false }
+        .onChange(of: schedule.id) { _ in draft = schedule; isDirty = false }
+    }
+
+    private func save() {
+        schedule = draft
+        ScheduleManager.shared.save()
+        ScheduleManager.shared.evaluate()
+        isDirty = false
     }
 }
 
@@ -203,6 +221,7 @@ struct TimePickerView: View {
     let label: String
     @Binding var time: TimeOfDay
     let isLocked: Bool
+    var onCommit: (() -> Void)? = nil
 
     @State private var hourText: String = ""
     @State private var minuteText: String = ""
@@ -211,29 +230,31 @@ struct TimePickerView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label).font(.caption).foregroundColor(.secondary)
-            HStack(spacing: 3) {
-                TextField("9", text: $hourText)
-                    .textFieldStyle(.roundedBorder)
-                    .frame(width: 34)
-                    .multilineTextAlignment(.center)
-                    .disabled(isLocked)
-                    .onChange(of: hourText) { _ in commitChange() }
-                Text(":").foregroundColor(.secondary)
-                TextField("00", text: $minuteText)
-                    .textFieldStyle(.roundedBorder)
-                    .frame(width: 34)
-                    .multilineTextAlignment(.center)
-                    .disabled(isLocked)
-                    .onChange(of: minuteText) { _ in commitChange() }
+            VStack(alignment: .center, spacing: 4) {
+                HStack(spacing: 3) {
+                    TextField("9", text: $hourText)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(width: 34)
+                        .multilineTextAlignment(.center)
+                        .disabled(isLocked)
+                        .onChange(of: hourText) { _ in commitChange() }
+                    Text(":").foregroundColor(.secondary)
+                    TextField("00", text: $minuteText)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(width: 34)
+                        .multilineTextAlignment(.center)
+                        .disabled(isLocked)
+                        .onChange(of: minuteText) { _ in commitChange() }
+                }
+                Picker("", selection: $isPM) {
+                    Text("AM").tag(false)
+                    Text("PM").tag(true)
+                }
+                .pickerStyle(.segmented)
+                .frame(width: 75)
+                .disabled(isLocked)
+                .onChange(of: isPM) { _ in commitChange() }
             }
-            Picker("", selection: $isPM) {
-                Text("AM").tag(false)
-                Text("PM").tag(true)
-            }
-            .pickerStyle(.segmented)
-            .frame(width: 75)
-            .disabled(isLocked)
-            .onChange(of: isPM) { _ in commitChange() }
         }
         .onAppear { loadFromTime() }
         .onChange(of: time) { _ in loadFromTime() }
@@ -253,6 +274,7 @@ struct TimePickerView: View {
         if isPM && h != 12 { hour24 = h + 12 }
         else if !isPM && h == 12 { hour24 = 0 }
         time = TimeOfDay(hour: hour24, minute: m)
+        onCommit?()
     }
 }
 

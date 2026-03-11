@@ -173,7 +173,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func openPause() {
         if pauseWindow == nil {
             let view = PauseView().environmentObject(appState)
-            let window = makeWindow(title: "Pause", content: view, size: NSSize(width: 320, height: 300))
+            let window = makeWindow(title: "Pause", content: view, size: NSSize(width: 185, height: 175))
             window.styleMask = [.titled, .closable]
             pauseWindow = window
             let delegate = WindowCloseDelegate { [weak self] in self?.pauseWindow = nil }
@@ -190,7 +190,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 .environmentObject(appState)
                 .environmentObject(BlocklistManager.shared)
                 .environmentObject(ScheduleManager.shared)
-            let window = makeWindow(title: "Tome Preferences", content: view, size: NSSize(width: 510, height: 390))
+            let window = makeWindow(title: "Tome Preferences", content: view, size: NSSize(width: 408, height: 468))
             prefsWindow = window
             let delegate = WindowCloseDelegate { [weak self] in self?.prefsWindow = nil }
             prefsWindowDelegate = delegate

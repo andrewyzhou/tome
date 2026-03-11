@@ -10,8 +10,6 @@ struct BlocklistsView: View {
     @State private var showImportPanel = false
     @State private var importError: String? = nil
 
-    private var isLocked: Bool { appState.isActivelyBlocking }
-
     var body: some View {
         HSplitView {
             // Sidebar: list of blocklists
@@ -37,7 +35,6 @@ struct BlocklistsView: View {
                             .frame(width: 28, height: 24)
                     }
                     .buttonStyle(.plain)
-                    .disabled(isLocked)
                     .help("Add blocklist")
 
                     Button {
@@ -50,7 +47,7 @@ struct BlocklistsView: View {
                             .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
-                    .disabled(isLocked || selectedID == nil)
+                    .disabled(selectedID == nil)
                     .help("Delete selected blocklist")
 
                     Spacer()
@@ -60,19 +57,17 @@ struct BlocklistsView: View {
                             .frame(width: 28, height: 24)
                     }
                     .buttonStyle(.plain)
-                    .disabled(isLocked)
                     .help("Import from file")
                 }
                 .padding(.horizontal, 4)
                 .frame(height: 28)
                 .background(Color(NSColor.controlBackgroundColor))
             }
-            .frame(minWidth: 160, idealWidth: 160, maxWidth: 200)
+            .frame(minWidth: 120, idealWidth: 120, maxWidth: 180)
 
             // Detail: domain editor
             if let id = selectedID, let idx = blocklistManager.blocklists.firstIndex(where: { $0.id == id }) {
-                BlocklistDetailView(blocklist: $blocklistManager.blocklists[idx], isLocked: isLocked)
-                    .onDisappear { blocklistManager.save() }
+                BlocklistDetailView(blocklist: $blocklistManager.blocklists[idx])
             } else {
                 Color.clear
                     .overlay(
@@ -113,27 +108,21 @@ struct BlocklistsView: View {
     private func addBlocklist() {
         isAdding = true
     }
-
-    private func deleteSelected() {
-        guard let id = selectedID else { return }
-        blocklistManager.delete(id: id)
-        selectedID = nil
-    }
 }
 
 struct BlocklistDetailView: View {
     @Binding var blocklist: Blocklist
-    let isLocked: Bool
 
+    @State private var draftName: String = ""
     @State private var domainsText: String = ""
     @State private var isDirty = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                TextField("Blocklist name", text: $blocklist.name)
+                TextField("Blocklist name", text: $draftName)
                     .textFieldStyle(.roundedBorder)
-                    .disabled(isLocked)
+                    .onChange(of: draftName) { _ in isDirty = true }
                 Spacer()
                 Text("\(blocklist.domains.count) domains")
                     .foregroundColor(.secondary)
@@ -145,33 +134,35 @@ struct BlocklistDetailView: View {
 
             TextEditor(text: $domainsText)
                 .font(.system(.body, design: .monospaced))
-                .disabled(isLocked)
                 .onChange(of: domainsText) { _ in isDirty = true }
 
             if isDirty {
                 HStack {
                     Spacer()
-                    Button("Apply") { applyEdits() }
+                    Button("Save Changes") { save() }
                         .buttonStyle(.borderedProminent)
                         .padding(8)
                 }
             }
         }
-        .onAppear {
-            domainsText = blocklist.domains.joined(separator: "\n")
-        }
-        .onChange(of: blocklist.id) { _ in
-            domainsText = blocklist.domains.joined(separator: "\n")
-            isDirty = false
-        }
+        .onAppear { load() }
+        .onChange(of: blocklist.id) { _ in load() }
     }
 
-    private func applyEdits() {
+    private func load() {
+        draftName = blocklist.name
+        domainsText = blocklist.domains.joined(separator: "\n")
+        isDirty = false
+    }
+
+    private func save() {
         let parsed = domainsText
             .components(separatedBy: .newlines)
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .filter { !$0.isEmpty && !$0.hasPrefix("#") }
+        blocklist.name = draftName
         blocklist.domains = Array(Set(parsed)).sorted()
+        BlocklistManager.shared.save()
         isDirty = false
     }
 }

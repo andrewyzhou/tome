@@ -34,16 +34,16 @@ struct PreferencesView: View {
                     .tag(2)
             }
         }
-        .frame(width: 510, height: 390)
+        .frame(width: 408, height: 468)
     }
 }
 
 struct ActiveSessionBanner: View {
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: "lock.fill")
+            Image(systemName: "book.closed.fill")
                 .foregroundColor(.orange)
-            Text("Preferences are read-only during an active block session.")
+            Text("Active block session.")
                 .font(.callout)
                 .foregroundColor(.primary)
             Spacer()
@@ -62,16 +62,13 @@ struct SettingsTabView: View {
     @EnvironmentObject var appState: AppState
     private let hostsManager = HostsFileManager.shared
 
-    private var openAtLogin: Bool {
-        SMAppService.mainApp.status == .enabled
-    }
+    @State private var isOpenAtLogin = false
 
     var body: some View {
         Form {
             Section {
-                Toggle("Open at login", isOn: Binding(
-                    get: { openAtLogin },
-                    set: { enabled in
+                Toggle("Open at login", isOn: $isOpenAtLogin)
+                    .onChange(of: isOpenAtLogin) { enabled in
                         do {
                             if enabled { try SMAppService.mainApp.register() }
                             else { try SMAppService.mainApp.unregister() }
@@ -79,7 +76,6 @@ struct SettingsTabView: View {
                             print("SMAppService error: \(error)")
                         }
                     }
-                ))
             } header: {
                 Text("General")
             }
@@ -103,5 +99,8 @@ struct SettingsTabView: View {
         }
         .formStyle(.grouped)
         .padding()
+        .onAppear {
+            isOpenAtLogin = SMAppService.mainApp.status == .enabled
+        }
     }
 }
