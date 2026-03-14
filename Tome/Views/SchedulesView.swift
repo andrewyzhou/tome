@@ -53,7 +53,8 @@ struct SchedulesView: View {
             if let id = selectedID, let idx = scheduleManager.schedules.firstIndex(where: { $0.id == id }) {
                 ScheduleDetailView(
                     schedule: $scheduleManager.schedules[idx],
-                    blocklists: blocklistManager.blocklists
+                    blocklists: blocklistManager.blocklists,
+                    isLocked: isLocked
                 )
             } else {
                 Color.clear.overlay(Text("Select a schedule").foregroundColor(.secondary))
@@ -96,6 +97,7 @@ struct ScheduleRowView: View {
 struct ScheduleDetailView: View {
     @Binding var schedule: ScheduleBlock
     let blocklists: [Blocklist]
+    let isLocked: Bool
 
     @State private var draft: ScheduleBlock = ScheduleBlock()
     @State private var isDirty = false
@@ -107,8 +109,10 @@ struct ScheduleDetailView: View {
                 HStack {
                     TextField("Schedule name", text: $draft.name)
                         .textFieldStyle(.roundedBorder)
+                        .disabled(isLocked)
                         .onChange(of: draft.name) { _ in isDirty = true }
                     Toggle("Enabled", isOn: $draft.isEnabled)
+                        .disabled(isLocked)
                         .onChange(of: draft.isEnabled) { _ in isDirty = true }
                 }
 
@@ -120,7 +124,7 @@ struct ScheduleDetailView: View {
                             DayToggleButton(
                                 day: day,
                                 isSelected: draft.days.contains(day),
-                                isLocked: false
+                                isLocked: isLocked
                             ) {
                                 if draft.days.contains(day) { draft.days.remove(day) }
                                 else { draft.days.insert(day) }
@@ -134,14 +138,15 @@ struct ScheduleDetailView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Time").font(.headline)
                     Toggle("All day", isOn: $draft.isAllDay)
+                        .disabled(isLocked)
                         .onChange(of: draft.isAllDay) { _ in isDirty = true }
                     if !draft.isAllDay {
                         HStack(spacing: 12) {
-                            TimePickerView(label: "From", time: $draft.startTime, isLocked: false) {
+                            TimePickerView(label: "From", time: $draft.startTime, isLocked: isLocked) {
                                 isDirty = true
                             }
                             Text("–").foregroundColor(.secondary)
-                            TimePickerView(label: "To", time: $draft.endTime, isLocked: false) {
+                            TimePickerView(label: "To", time: $draft.endTime, isLocked: isLocked) {
                                 isDirty = true
                             }
                         }
@@ -165,13 +170,14 @@ struct ScheduleDetailView: View {
                                     isDirty = true
                                 }
                             ))
+                            .disabled(isLocked)
                         }
                     }
                 }
 
                 Spacer()
 
-                if isDirty {
+                if isDirty && !isLocked {
                     HStack {
                         Spacer()
                         Button("Save Changes") { save() }
@@ -217,6 +223,11 @@ struct DayToggleButton: View {
     }
 }
 
+private struct RowWidthKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
+}
+
 struct TimePickerView: View {
     let label: String
     @Binding var time: TimeOfDay
@@ -226,35 +237,39 @@ struct TimePickerView: View {
     @State private var hourText: String = ""
     @State private var minuteText: String = ""
     @State private var isPM: Bool = false
+    @State private var rowWidth: CGFloat = 75
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label).font(.caption).foregroundColor(.secondary)
-            VStack(alignment: .center, spacing: 4) {
-                HStack(spacing: 3) {
-                    TextField("9", text: $hourText)
-                        .textFieldStyle(.roundedBorder)
-                        .frame(width: 34)
-                        .multilineTextAlignment(.center)
-                        .disabled(isLocked)
-                        .onChange(of: hourText) { _ in commitChange() }
-                    Text(":").foregroundColor(.secondary)
-                    TextField("00", text: $minuteText)
-                        .textFieldStyle(.roundedBorder)
-                        .frame(width: 34)
-                        .multilineTextAlignment(.center)
-                        .disabled(isLocked)
-                        .onChange(of: minuteText) { _ in commitChange() }
-                }
-                Picker("", selection: $isPM) {
-                    Text("AM").tag(false)
-                    Text("PM").tag(true)
-                }
-                .pickerStyle(.segmented)
-                .frame(width: 75)
-                .disabled(isLocked)
-                .onChange(of: isPM) { _ in commitChange() }
+            HStack(spacing: 3) {
+                TextField("9", text: $hourText)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 34)
+                    .multilineTextAlignment(.center)
+                    .disabled(isLocked)
+                    .onChange(of: hourText) { _ in commitChange() }
+                Text(":").foregroundColor(.secondary)
+                TextField("00", text: $minuteText)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 34)
+                    .multilineTextAlignment(.center)
+                    .disabled(isLocked)
+                    .onChange(of: minuteText) { _ in commitChange() }
             }
+            .fixedSize()
+            .background(GeometryReader { geo in
+                Color.clear.preference(key: RowWidthKey.self, value: geo.size.width)
+            })
+            .onPreferenceChange(RowWidthKey.self) { w in rowWidth = w }
+            Picker("", selection: $isPM) {
+                Text("AM").tag(false)
+                Text("PM").tag(true)
+            }
+            .pickerStyle(.segmented)
+            .frame(width: rowWidth)
+            .disabled(isLocked)
+            .onChange(of: isPM) { _ in commitChange() }
         }
         .onAppear { loadFromTime() }
         .onChange(of: time) { _ in loadFromTime() }

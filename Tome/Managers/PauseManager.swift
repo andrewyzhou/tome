@@ -67,13 +67,12 @@ class PauseManager: ObservableObject {
 
     func confirmPause(minutes: Int) {
         let endsAt = Date().addingTimeInterval(TimeInterval(minutes * 60))
+        // set isPaused synchronously FIRST so evaluate() cannot re-apply blocks
+        appState.pendingPauseConfirmation = false
+        appState.isPaused = true
+        appState.pauseEndsAt = endsAt
+        appState.isBlocking = false
         hostsManager.removeAllBlocks()
-        DispatchQueue.main.async {
-            self.appState.pendingPauseConfirmation = false
-            self.appState.isPaused = true
-            self.appState.pauseEndsAt = endsAt
-            self.appState.isBlocking = false
-        }
         breakTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             self?.tickBreak()
         }

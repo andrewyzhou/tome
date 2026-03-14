@@ -41,9 +41,9 @@ struct PreferencesView: View {
 struct ActiveSessionBanner: View {
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: "book.closed.fill")
+            Image(systemName: "lock.fill")
                 .foregroundColor(.orange)
-            Text("Active block session.")
+            Text("Preferences are read-only during an active block session.")
                 .font(.callout)
                 .foregroundColor(.primary)
             Spacer()

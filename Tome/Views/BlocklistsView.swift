@@ -67,7 +67,7 @@ struct BlocklistsView: View {
 
             // Detail: domain editor
             if let id = selectedID, let idx = blocklistManager.blocklists.firstIndex(where: { $0.id == id }) {
-                BlocklistDetailView(blocklist: $blocklistManager.blocklists[idx])
+                BlocklistDetailView(blocklist: $blocklistManager.blocklists[idx], isLocked: appState.isActivelyBlocking)
             } else {
                 Color.clear
                     .overlay(
@@ -112,6 +112,7 @@ struct BlocklistsView: View {
 
 struct BlocklistDetailView: View {
     @Binding var blocklist: Blocklist
+    let isLocked: Bool
 
     @State private var draftName: String = ""
     @State private var domainsText: String = ""
@@ -122,6 +123,7 @@ struct BlocklistDetailView: View {
             HStack {
                 TextField("Blocklist name", text: $draftName)
                     .textFieldStyle(.roundedBorder)
+                    .disabled(isLocked)
                     .onChange(of: draftName) { _ in isDirty = true }
                 Spacer()
                 Text("\(blocklist.domains.count) domains")
@@ -134,9 +136,10 @@ struct BlocklistDetailView: View {
 
             TextEditor(text: $domainsText)
                 .font(.system(.body, design: .monospaced))
+                .disabled(isLocked)
                 .onChange(of: domainsText) { _ in isDirty = true }
 
-            if isDirty {
+            if isDirty && !isLocked {
                 HStack {
                     Spacer()
                     Button("Save Changes") { save() }
