@@ -22,8 +22,8 @@ struct PauseView: View {
         TimelineView(.periodic(from: .now, by: 1.0)) { _ in
             content
         }
-        .frame(width: 408, height: 468)
         .padding(28)
+        .frame(width: 408, height: 468)
     }
 
     @ViewBuilder

@@ -16,14 +16,8 @@ struct BlocklistsView: View {
             VStack(spacing: 0) {
                 List(selection: $selectedID) {
                     ForEach(blocklistManager.blocklists) { list in
-                        HStack {
-                            Text(list.name)
-                            Spacer()
-                            Text("\(list.domains.count)")
-                                .foregroundColor(.secondary)
-                                .font(.caption)
-                        }
-                        .tag(list.id)
+                        Text(list.name)
+                            .tag(list.id)
                     }
                 }
 

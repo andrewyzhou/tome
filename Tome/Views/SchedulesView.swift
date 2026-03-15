@@ -223,11 +223,6 @@ struct DayToggleButton: View {
     }
 }
 
-private struct RowWidthKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
-}
-
 struct TimePickerView: View {
     let label: String
     @Binding var time: TimeOfDay
@@ -237,39 +232,35 @@ struct TimePickerView: View {
     @State private var hourText: String = ""
     @State private var minuteText: String = ""
     @State private var isPM: Bool = false
-    @State private var rowWidth: CGFloat = 75
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label).font(.caption).foregroundColor(.secondary)
-            HStack(spacing: 3) {
-                TextField("9", text: $hourText)
-                    .textFieldStyle(.roundedBorder)
-                    .frame(width: 34)
-                    .multilineTextAlignment(.center)
-                    .disabled(isLocked)
-                    .onChange(of: hourText) { _ in commitChange() }
-                Text(":").foregroundColor(.secondary)
-                TextField("00", text: $minuteText)
-                    .textFieldStyle(.roundedBorder)
-                    .frame(width: 34)
-                    .multilineTextAlignment(.center)
-                    .disabled(isLocked)
-                    .onChange(of: minuteText) { _ in commitChange() }
+            VStack(alignment: .center, spacing: 4) {
+                HStack(spacing: 3) {
+                    TextField("9", text: $hourText)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(width: 34)
+                        .multilineTextAlignment(.center)
+                        .disabled(isLocked)
+                        .onChange(of: hourText) { _ in commitChange() }
+                    Text(":").foregroundColor(.secondary)
+                    TextField("00", text: $minuteText)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(width: 34)
+                        .multilineTextAlignment(.center)
+                        .disabled(isLocked)
+                        .onChange(of: minuteText) { _ in commitChange() }
+                }
+                Picker("", selection: $isPM) {
+                    Text("AM").tag(false)
+                    Text("PM").tag(true)
+                }
+                .pickerStyle(.segmented)
+                .frame(width: 75)
+                .disabled(isLocked)
+                .onChange(of: isPM) { _ in commitChange() }
             }
-            .fixedSize()
-            .background(GeometryReader { geo in
-                Color.clear.preference(key: RowWidthKey.self, value: geo.size.width)
-            })
-            .onPreferenceChange(RowWidthKey.self) { w in rowWidth = w }
-            Picker("", selection: $isPM) {
-                Text("AM").tag(false)
-                Text("PM").tag(true)
-            }
-            .pickerStyle(.segmented)
-            .frame(width: rowWidth)
-            .disabled(isLocked)
-            .onChange(of: isPM) { _ in commitChange() }
         }
         .onAppear { loadFromTime() }
         .onChange(of: time) { _ in loadFromTime() }

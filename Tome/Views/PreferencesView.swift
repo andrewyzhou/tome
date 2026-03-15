@@ -43,7 +43,7 @@ struct ActiveSessionBanner: View {
         HStack(spacing: 12) {
             Image(systemName: "lock.fill")
                 .foregroundColor(.orange)
-            Text("Preferences are read-only during an active block session.")
+            Text("Read-only during an active block session.")
                 .font(.callout)
                 .foregroundColor(.primary)
             Spacer()
