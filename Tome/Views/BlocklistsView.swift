@@ -62,6 +62,7 @@ struct BlocklistsView: View {
             // Detail: domain editor
             if let id = selectedID, let idx = blocklistManager.blocklists.firstIndex(where: { $0.id == id }) {
                 BlocklistDetailView(blocklist: $blocklistManager.blocklists[idx], isLocked: appState.isActivelyBlocking)
+                    .id(id)
             } else {
                 Color.clear
                     .overlay(
