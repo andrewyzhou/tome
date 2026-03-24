@@ -104,21 +104,24 @@ class HostsEditor {
     }
 
     private func flushDNSCache() {
-        let task = Process()
-        task.launchPath = "/usr/bin/dscacheutil"
-        task.arguments = ["-flushcache"]
-        try? task.run()
-        task.waitUntilExit()
+        // run async so a hung process can't block the main RunLoop timer
+        DispatchQueue.global(qos: .utility).async {
+            let task = Process()
+            task.launchPath = "/usr/bin/dscacheutil"
+            task.arguments = ["-flushcache"]
+            try? task.run()
+            task.waitUntilExit()
 
-        guard let pid = mDNSResponderPID() else {
-            log("WARN: could not find mDNSResponder PID — DNS cache not flushed via HUP")
-            return
+            guard let pid = mDNSResponderPID() else {
+                log("WARN: could not find mDNSResponder PID — DNS cache not flushed via HUP")
+                return
+            }
+            let task2 = Process()
+            task2.launchPath = "/bin/kill"
+            task2.arguments = ["-HUP", String(pid)]
+            try? task2.run()
+            task2.waitUntilExit()
         }
-        let task2 = Process()
-        task2.launchPath = "/bin/kill"
-        task2.arguments = ["-HUP", String(pid)]
-        try? task2.run()
-        task2.waitUntilExit()
     }
 
     private func mDNSResponderPID() -> Int32? {
