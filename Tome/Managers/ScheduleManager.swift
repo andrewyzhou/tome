@@ -56,7 +56,22 @@ class ScheduleManager: ObservableObject {
     }
 
     private func startTimer() {
-        timer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true) { [weak self] _ in
+        // fire at XX:01 of every minute — schedules always start/end on minute boundaries
+        // so this gives ~1s response time with only 1 poll per minute
+        let now = Date()
+        let cal = Calendar.current
+        let nextMinute = cal.nextDate(after: now, matching: DateComponents(second: 1), matchingPolicy: .nextTime)!
+        let delay = nextMinute.timeIntervalSince(now)
+
+        let oneShot = Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { [weak self] _ in
+            self?.evaluate()
+            self?.startRepeatingTimer()
+        }
+        RunLoop.main.add(oneShot, forMode: .common)
+    }
+
+    private func startRepeatingTimer() {
+        timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
             self?.evaluate()
         }
         RunLoop.main.add(timer!, forMode: .common)
