@@ -23,7 +23,7 @@ struct PauseView: View {
             content
         }
         .padding(28)
-        .frame(width: 408, height: 468)
+        .frame(width: 408, height: 408)
     }
 
     @ViewBuilder
@@ -44,17 +44,17 @@ struct PauseView: View {
     private var idleView: some View {
         VStack(spacing: 10) {
             Image(systemName: "pause.circle")
-                .font(.system(size: 28))
+                .font(.system(size: 40))
                 .foregroundColor(.secondary)
             Text("Pause")
-                .font(.headline).fontWeight(.semibold)
+                .font(.title2).fontWeight(.semibold)
             VStack(spacing: 2) {
                 Text("Type \"pause\" to pause Tome after a 5-minute wait.")
-                    .font(.caption)
+                    .font(.callout)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                 Text("Type \"urgent\" to pause Tome immediately.")
-                    .font(.caption)
+                    .font(.callout)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
             }
@@ -74,15 +74,15 @@ struct PauseView: View {
         let remaining = pauseManager.countdownSecondsRemaining
         return VStack(spacing: 10) {
             Image(systemName: "timer")
-                .font(.system(size: 28))
+                .font(.system(size: 40))
                 .foregroundColor(.orange)
             Text("Pause requested")
-                .font(.headline).fontWeight(.semibold)
+                .font(.title2).fontWeight(.semibold)
             Text(String(format: "%d:%02d", remaining / 60, remaining % 60))
                 .font(.system(size: 32, weight: .thin, design: .monospaced))
                 .foregroundColor(.orange)
             Text("Confirm your pause when the timer reaches zero.")
-                .font(.caption)
+                .font(.callout)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
             Button("Cancel") { pauseManager.cancelPauseRequest() }
@@ -92,13 +92,13 @@ struct PauseView: View {
     private var confirmView: some View {
         VStack(spacing: 10) {
             Image(systemName: "pause.circle.fill")
-                .font(.system(size: 28))
+                .font(.system(size: 40))
                 .foregroundColor(.orange)
             Text("Take a break?")
-                .font(.headline).fontWeight(.semibold)
+                .font(.title2).fontWeight(.semibold)
             VStack(spacing: 4) {
                 Text("\(Int(breakMinutes)) minute\(Int(breakMinutes) == 1 ? "" : "s")")
-                    .font(.subheadline)
+                    .font(.body)
                 Slider(value: $breakMinutes, in: 1...15, step: 1)
                     .frame(width: 130)
                 HStack {
@@ -124,15 +124,15 @@ struct PauseView: View {
         let remaining = pauseManager.breakSecondsRemaining
         return VStack(spacing: 10) {
             Image(systemName: "pause.circle.fill")
-                .font(.system(size: 28))
+                .font(.system(size: 40))
                 .foregroundColor(.green)
             Text("Paused")
-                .font(.headline).fontWeight(.semibold)
+                .font(.title2).fontWeight(.semibold)
             Text(String(format: "%d:%02d", remaining / 60, remaining % 60))
                 .font(.system(size: 32, weight: .thin, design: .monospaced))
                 .foregroundColor(.green)
             Text("Tome will resume automatically after your pause finishes.")
-                .font(.caption)
+                .font(.callout)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
             Button("End pause early") {

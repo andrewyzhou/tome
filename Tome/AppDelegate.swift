@@ -173,7 +173,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func openPause() {
         if pauseWindow == nil {
             let view = PauseView().environmentObject(appState)
-            let window = makeWindow(title: "Pause", content: view, size: NSSize(width: 408, height: 468))
+            let window = makeWindow(title: "Pause", content: view, size: NSSize(width: 408, height: 408))
             window.styleMask = [.titled, .closable]
             pauseWindow = window
             let delegate = WindowCloseDelegate { [weak self] in self?.pauseWindow = nil }
