@@ -105,7 +105,7 @@ class HostsEditor {
 
     private func flushDNSCache() {
         // run async so a hung process can't block the main RunLoop timer
-        DispatchQueue.global(qos: .utility).async {
+        DispatchQueue.global(qos: .utility).async { [self] in
             let task = Process()
             task.launchPath = "/usr/bin/dscacheutil"
             task.arguments = ["-flushcache"]
