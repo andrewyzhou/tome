@@ -27,6 +27,10 @@
 		AA2000000000000000000012 /* HostsEditor.swift in Helper Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000011 /* HostsEditor.swift */; };
 		AA2000000000000000000013 /* GuardWatcher.swift in Helper Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000012 /* GuardWatcher.swift */; };
 		AA2000000000000000000014 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000013 /* Assets.xcassets */; };
+		AA200000000000000000001A /* TabKiller.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000001A /* TabKiller.swift */; };
+		AA200000000000000000001C /* DevLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000001C /* DevLogger.swift */; };
+		AA200000000000000000001D /* DevLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000001D /* DevLogView.swift */; };
+		AA200000000000000000001B /* PFManager.swift in Helper Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000001B /* PFManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +53,10 @@
 		AA1000000000000000000011 /* HostsEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostsEditor.swift; sourceTree = "<group>"; };
 		AA1000000000000000000012 /* GuardWatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuardWatcher.swift; sourceTree = "<group>"; };
 		AA1000000000000000000013 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AA100000000000000000001A /* TabKiller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabKiller.swift; sourceTree = "<group>"; };
+		AA100000000000000000001C /* DevLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevLogger.swift; sourceTree = "<group>"; };
+		AA100000000000000000001D /* DevLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevLogView.swift; sourceTree = "<group>"; };
+		AA100000000000000000001B /* PFManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PFManager.swift; sourceTree = "<group>"; };
 		AA1000000000000000000014 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AA1000000000000000000015 /* Tome.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Tome.entitlements; sourceTree = "<group>"; };
 		AA1000000000000000000016 /* TomeHelper-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TomeHelper-Info.plist"; sourceTree = "<group>"; };
@@ -99,6 +107,8 @@
 			children = (
 				AA1000000000000000000001 /* TomeApp.swift */,
 				AA1000000000000000000002 /* AppDelegate.swift */,
+				AA100000000000000000001A /* TabKiller.swift */,
+				AA100000000000000000001C /* DevLogger.swift */,
 				AA0000000000000000000005 /* Models */,
 				AA0000000000000000000006 /* Managers */,
 				AA0000000000000000000007 /* Views */,
@@ -138,6 +148,7 @@
 				AA100000000000000000000C /* BlocklistsView.swift */,
 				AA100000000000000000000D /* SchedulesView.swift */,
 				AA100000000000000000000E /* PauseView.swift */,
+				AA100000000000000000001D /* DevLogView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -148,6 +159,7 @@
 				AA1000000000000000000010 /* main.swift */,
 				AA1000000000000000000011 /* HostsEditor.swift */,
 				AA1000000000000000000012 /* GuardWatcher.swift */,
+				AA100000000000000000001B /* PFManager.swift */,
 				AA1000000000000000000016 /* TomeHelper-Info.plist */,
 				AA1000000000000000000017 /* TomeHelper.entitlements */,
 			);
@@ -274,6 +286,9 @@
 				AA200000000000000000000D /* SchedulesView.swift in Sources */,
 				AA200000000000000000000E /* PauseView.swift in Sources */,
 				AA200000000000000000000F /* TomeIPC.swift in Tome Sources */,
+				AA200000000000000000001A /* TabKiller.swift in Sources */,
+				AA200000000000000000001C /* DevLogger.swift in Sources */,
+				AA200000000000000000001D /* DevLogView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -285,6 +300,7 @@
 				AA2000000000000000000011 /* main.swift in Helper Sources */,
 				AA2000000000000000000012 /* HostsEditor.swift in Helper Sources */,
 				AA2000000000000000000013 /* GuardWatcher.swift in Helper Sources */,
+				AA200000000000000000001B /* PFManager.swift in Helper Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
