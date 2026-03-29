@@ -9,6 +9,7 @@ try? FileManager.default.createDirectory(
 )
 
 let hostsEditor = HostsEditor()
+let pfManager = PFManager()
 let guardWatcher = GuardWatcher()
 let decoder = JSONDecoder()
 decoder.dateDecodingStrategy = .iso8601
@@ -16,6 +17,7 @@ decoder.dateDecodingStrategy = .iso8601
 var lastCommandTimestamp: Date? = nil
 
 log("TomeHelper started (PID \(ProcessInfo.processInfo.processIdentifier))")
+pfManager.setup()
 
 // Main loop
 let timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
@@ -39,10 +41,16 @@ func processCommands() {
     case .block:
         let domains = command.domains ?? []
         hostsEditor.applyBlock(domains: domains)
+        DispatchQueue.global(qos: .userInitiated).async {
+            pfManager.applyBlock(domains: domains)
+        }
         log("Blocked \(domains.count) domain(s)")
 
     case .unblock:
         hostsEditor.removeAllBlocks()
+        DispatchQueue.global(qos: .userInitiated).async {
+            pfManager.removeAllBlocks()
+        }
         log("Removed all blocks")
 
     case .setLockedMode:

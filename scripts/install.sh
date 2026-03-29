@@ -57,6 +57,13 @@ echo "Installing Tome.app..."
 rm -rf "$APP_DEST"
 cp -R "$BUILD_DIR/Release/Tome.app" "$APP_DEST"
 
+# Re-sign with local certificate so macOS grants TCC prompts (Automation, etc.)
+if security find-identity -v -p codesigning | grep -q "Tome Dev"; then
+  echo "Re-signing Tome.app with Tome Dev certificate..."
+  codesign --force --deep --sign "Tome Dev" \
+    --entitlements "$REPO_DIR/Tome/Tome.entitlements" "$APP_DEST"
+fi
+
 # ---------- Install helper ----------
 echo "Installing TomeHelper..."
 mkdir -p /Library/PrivilegedHelperTools
@@ -86,6 +93,16 @@ mkdir -p "$AGENT_DIR"
 cp "$AGENT_PLIST_SRC" "$AGENT_DIR/com.andrewzhou.tome.plist"
 chown "$CURRENT_USER" "$AGENT_DIR/com.andrewzhou.tome.plist"
 sudo -u "$CURRENT_USER" launchctl load -w "$AGENT_DIR/com.andrewzhou.tome.plist"
+
+# ---------- pf anchor ----------
+echo "Setting up pf anchor..."
+PF_CONF="/etc/pf.conf"
+if ! grep -qF 'anchor "tome"' "$PF_CONF"; then
+  echo 'anchor "tome"' >> "$PF_CONF"
+  echo "  Added anchor \"tome\" to $PF_CONF"
+fi
+pfctl -e 2>/dev/null || true
+pfctl -f "$PF_CONF" 2>/dev/null || true
 
 echo ""
 echo "✓ Tome installed successfully."
