@@ -1,5 +1,6 @@
 import SwiftUI
 import ServiceManagement
+import AppKit
 
 struct PreferencesView: View {
     @EnvironmentObject var appState: AppState
@@ -32,6 +33,13 @@ struct PreferencesView: View {
                     .environmentObject(appState)
                     .tabItem { Label("Settings", systemImage: "gearshape") }
                     .tag(2)
+
+                if appState.developerMode {
+                    DevLogView()
+                        .environmentObject(appState)
+                        .tabItem { Label("Debug", systemImage: "ant") }
+                        .tag(3)
+                }
             }
         }
         .frame(width: 408, height: 468)
@@ -93,8 +101,27 @@ struct SettingsTabView: View {
                 Text("When locked, Tome cannot be quit or killed while a schedule is active. Can only be disabled outside of block hours.")
                     .font(.caption)
                     .foregroundColor(.secondary)
+
+                Toggle("Disable urgent pauses", isOn: Binding(
+                    get: { appState.urgentPausesDisabled },
+                    set: { appState.setUrgentPausesDisabled($0) }
+                ))
+                .disabled(!appState.canToggleUrgentPausesDisabled)
+
+                Text("When enabled, the \"urgent\" shortcut in the pause window is unavailable during block sessions.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             } header: {
                 Text("Security")
+            }
+
+            Section {
+                Toggle("Developer mode", isOn: Binding(
+                    get: { appState.developerMode },
+                    set: { appState.setDeveloperMode($0) }
+                ))
+            } header: {
+                Text("Developer")
             }
         }
         .formStyle(.grouped)
