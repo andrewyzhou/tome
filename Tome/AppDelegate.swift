@@ -11,8 +11,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private let pauseManager = PauseManager.shared
     private let hostsManager = HostsFileManager.shared
     private let scheduleManager = ScheduleManager.shared
+    private let tabKiller = TabKiller()
 
     private var statusTimer: Timer?
+    private var tabKillTimer: Timer?
+    private var previousIsBlocking = false
+    private var previousIsPaused = false
 
     // windows
     private var prefsWindow: NSWindow?
@@ -47,7 +51,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         hostsManager.removeAllBlocks()
         hostsManager.setLockedMode(false)
-        return .terminateNow
+        // Wait 1.5s for TomeHelper to poll and process the unblock command
+        // before this process exits (TomeHelper polls every 1s)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            NSApp.reply(toApplicationShouldTerminate: true)
+        }
+        return .terminateLater
     }
 
     // MARK: - Status Item
@@ -148,8 +157,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
 
-        appState.$isBlocking.receive(on: RunLoop.main).sink(receiveValue: rebuild).store(in: &cancellables)
-        appState.$isPaused.receive(on: RunLoop.main).sink(receiveValue: rebuild).store(in: &cancellables)
+        appState.$isBlocking.receive(on: RunLoop.main).sink { [weak self] isBlocking in
+            guard let self = self else { return }
+            self.previousIsBlocking = isBlocking
+            self.updateTabKillTimer()
+            rebuild(isBlocking)
+        }.store(in: &cancellables)
+        appState.$isPaused.receive(on: RunLoop.main).sink { [weak self] isPaused in
+            guard let self = self else { return }
+            self.previousIsPaused = isPaused
+            self.updateTabKillTimer()
+            rebuild(isPaused)
+        }.store(in: &cancellables)
         appState.$pauseRequestActive.receive(on: RunLoop.main).sink(receiveValue: rebuild).store(in: &cancellables)
         appState.$pendingPauseConfirmation.receive(on: RunLoop.main).sink(receiveValue: rebuild).store(in: &cancellables)
     }
@@ -166,6 +185,35 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             statusTimer?.invalidate()
             statusTimer = nil
         }
+    }
+
+    private func updateTabKillTimer() {
+        let shouldRun = appState.isBlocking && !appState.isPaused
+        devLog("updateTabKillTimer: isBlocking=\(appState.isBlocking) isPaused=\(appState.isPaused) → shouldRun=\(shouldRun) timerExists=\(tabKillTimer != nil)")
+        if shouldRun && tabKillTimer == nil {
+            devLog("TabKillTimer: starting")
+            tabKillTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+                guard let self = self else { return }
+                let domains = self.currentBlockedDomains()
+                devLog("TabKillTimer tick: activeSchedules=\(self.appState.activeSchedules.count) domains=\(domains)")
+                if domains.isEmpty {
+                    devLog("TabKillTimer: no domains, skipping")
+                } else {
+                    self.tabKiller.closeBlockedTabs(domains: domains)
+                }
+            }
+            RunLoop.main.add(tabKillTimer!, forMode: .common)
+        } else if !shouldRun {
+            if tabKillTimer != nil { devLog("TabKillTimer: stopping") }
+            tabKillTimer?.invalidate()
+            tabKillTimer = nil
+        }
+    }
+
+    private func currentBlockedDomains() -> [String] {
+        let ids = appState.activeSchedules.reduce(Set<UUID>()) { $0.union($1.blocklistIDs) }
+        let domains = BlocklistManager.shared.domains(for: ids)
+        return domains
     }
 
     // MARK: - Actions

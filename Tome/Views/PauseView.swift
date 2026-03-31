@@ -8,7 +8,8 @@ struct PauseView: View {
 
     private var isValidInput: Bool {
         let v = pauseInput.trimmingCharacters(in: .whitespaces).lowercased()
-        return v == "pause" || v == "urgent"
+        if v == "urgent" { return !appState.urgentPausesDisabled }
+        return v == "pause"
     }
 
     private func submitPauseInput() {
@@ -53,10 +54,12 @@ struct PauseView: View {
                     .font(.callout)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
-                Text("Type \"urgent\" to pause Tome immediately.")
-                    .font(.callout)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
+                if !appState.urgentPausesDisabled {
+                    Text("Type \"urgent\" to pause Tome immediately.")
+                        .font(.callout)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                }
             }
             HStack(spacing: 6) {
                 TextField("", text: $pauseInput)

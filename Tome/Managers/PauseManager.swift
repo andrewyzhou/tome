@@ -17,6 +17,7 @@ class PauseManager: ObservableObject {
 
     func urgentPause() {
         guard appState.isActivelyBlocking,
+              !appState.urgentPausesDisabled,
               !appState.pauseRequestActive,
               !appState.pendingPauseConfirmation else { return }
         appState.pendingPauseConfirmation = true
